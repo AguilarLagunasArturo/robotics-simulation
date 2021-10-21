@@ -1,8 +1,8 @@
 #! /usr/bin/env python3
 
 '''
-Author: 		Arturo Aguilar Lagunas
-Date:			Tue Oct 19 11:14:09 AM CDT 2021
+Author:         Arturo Aguilar Lagunas
+Date:           Tue Oct 19 11:14:09 AM CDT 2021
 Description:    Basic operations for manipuling links
 '''
 
