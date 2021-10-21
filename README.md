@@ -1,9 +1,9 @@
-# Robotics simulation using Python
+# Robotics simulation using Python3
 Attempt to simulate a robotic arm
 
 ## Python dependencies
-|Module|Tested with version|
+|Module|Installation|Tested with version|
 |:-|:-|
-|numpy|1.19.5|
-|matplotlib|3.3.4|
-|pynput|1.7.4|
+|numpy|`pip install numpy`|1.19.5|
+|matplotlib|`pip install matplotlib`|3.3.4|
+|pynput|`pip install pynput`|1.7.4|
