@@ -4,14 +4,14 @@
 # Date:         Tue Oct 19 12:17:43 PM CDT 2021
 # Description:  Main file for testing
 
-from stuff import Axis, Link
+from stuff import Axis
 from matplotlib.animation import FuncAnimation
 import matplotlib.pyplot as plt
 import numpy as np
 import threading
 
 origin = Axis(0, 0, 0)
-arm1 = Link(pos=[0, 0, 0], mag=2)
+arm1 = Axis(0, 0, 0)
 amt = np.pi/10
 
 def key_listening():
@@ -19,15 +19,15 @@ def key_listening():
     while True:
         command = input('Command: ')
         if command == 'x':
-            arm1.axis.rotate(alpha=amt)
+            arm1.rotate(alpha=amt)
         elif command == 'y':
-            arm1.axis.rotate(beta=amt)
+            arm1.rotate(beta=amt)
         elif command == 'z':
-            arm1.axis.rotate(gamma=amt)
+            arm1.rotate(gamma=amt)
         elif command == '-x':
-            arm1.axis.rotate(alpha=-amt)
+            arm1.rotate(alpha=-amt)
         elif command == '-y':
-            arm1.axis.rotate(beta=-amt)
+            arm1.rotate(beta=-amt)
         elif command == '-z':
             arm1.rotate(gamma=-amt)
         else:
@@ -40,18 +40,13 @@ fig = plt.figure()
 ax = fig.add_subplot(projection='3d')
 
 def plotAxis(a):
-    colors = ['c', 'g', 'm']
-    start_pos = a.pos.flatten()
+    start_pos = a.p.flatten()
     ax.scatter(start_pos[0], start_pos[1], start_pos[2], marker='o')
-    for i, end_pos in enumerate(a.axises):
+    for end_pos in a.axises:
         ax.plot(
             [start_pos[0], start_pos[0] + end_pos[0]],
             [start_pos[1], start_pos[1] + end_pos[1]],
-            [start_pos[2], start_pos[2] + end_pos[2]], color=colors[i%3])
-
-# TODO: CODE FUNCTION PLOTELEMENT (INSTEAD OF PLOTAXIS TO PLOT AXIS + LINK)
-# TODO: CREATE MODULE FOR GRAPHING WITH MATPLOTLIB
-# TODO: CREATE MODULE FOR GRAPHING WITH OPENGL
+            [start_pos[2], start_pos[2] + end_pos[2]])
 
 def animate(i):
     global sx_data, sy_data, sz_data
@@ -66,7 +61,7 @@ def animate(i):
     ax.set_zlabel('Z Label')
 
     plotAxis(origin)
-    plotAxis(arm1.axis)
+    plotAxis(arm1)
 
 ani = FuncAnimation(plt.gcf(), animate, interval=1)
 plt.show()

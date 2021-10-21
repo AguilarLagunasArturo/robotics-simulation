@@ -29,10 +29,10 @@ def get_rz(theta=0):
         [0, 0, 1]
     ], dtype=float)
 
-class Axis():
+class Axis:
     def __init__(self, p1, p2, p3):
         self.axises = np.eye(3)
-        self.p = np.array([p1, p2, p3], dtype=float).reshape(3, 1)
+        self.pos = np.array([p1, p2, p3], dtype=float).reshape(3, 1)
 
     def rotate(self, alpha=0.0, beta=0.0, gamma=0.0):
         self.axises = np.matmul( get_rx(alpha), self.axises)
@@ -40,30 +40,21 @@ class Axis():
         self.axises = np.matmul( get_rz(gamma), self.axises)
         return self.axises
 
+# TODO: INHERIT FROM AXIS CLASS
 class Link():
-    CARTESIAN = 0
-    CYLINDICAL = 1
-    SPHERICAL = 2
-
-    def __init__(self, v1, v2, v3, m=CARTESIAN):
-        self.v = np.array([v1, v2, v3], dtype=float)
-
-        if m == Link.CARTESIAN:
-            self.v_cartesian = self.v
-            # self.v_cylindrical = np.array([rho, theta, z])
-            # self.v_spherical = np.array([r, theta, phi])
-        elif m == Link.CYLINDRICAL:
-            # self.v_cartesian = np.array([x, y, z])
-            self.v_cylindrical = self.v
-            # self.v_spherical = np.array([r, theta, phi])
-        elif m == Link.SHPERICAL:
-            # self.v_cartesian = np.array([x, y, z])
-            # self.v_cylindrical = np.array([rho, theta, z])
-            self.v_spherical = self.v
-        else:
-            raise Exception("Invalid system")
-
-        print(self.v.shape)
+    id = 0
+    ''' NOTES:
+        - INITIAL POSITION, MAGNITUDE/LEGHT/SIZE IN +Z DIRECTION
+        - TODO: DIRECTION FROM LINK IS DIFERENT FROM THE ONE IN AXIS
+        - TODO: POSITION IN SPACE FROM LINK IS DIFERENT FROM THE ONE IN AXIS
+    '''
+    def __init__(self, pos=[0, 0, 0], dir=[0, 0, 0], mag=1.0):
+        Link.id += 1
+        self.name = 'link-{}'.format(Link.id)
+        self.axis = Axis(pos[0], pos[1], pos[2])
+        # TODO: Rotate self.axis by dir
+        self.mag = np.array([0, 0, mag], dtype=float).reshape(3, 1)
+        print('created: {}'.format(self.name))
 
     def rotate(self, angle):
         pass
@@ -80,4 +71,3 @@ class Link():
     def __calculate_spherical(self):
         # r, theta, phi
         pass
-
