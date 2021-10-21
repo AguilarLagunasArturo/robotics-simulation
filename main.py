@@ -4,7 +4,7 @@
 # Date:         Tue Oct 19 12:17:43 PM CDT 2021
 # Description:  Main file for testing
 
-from stuff import Axis, Link
+from rlib import Axis, Link
 from matplotlib.animation import FuncAnimation
 import matplotlib.pyplot as plt
 import numpy as np
