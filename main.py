@@ -51,7 +51,7 @@ def plot_axis(a):
 
 def plot_link(l):
     start_pos = l.pos.flatten()
-    end_pos = np.transpose(l.lenght)[2].flatten()
+    end_pos = l.lenght.flatten()
     ax.plot(
         [start_pos[0], start_pos[0] + end_pos[0]],
         [start_pos[1], start_pos[1] + end_pos[1]],
@@ -64,7 +64,7 @@ def plot_element(e):
 # TODO: CREATE MODULE FOR GRAPHING WITH OPENGL
 
 def animate(i):
-    global sx_data, sy_data, sz_data
+    global origin, arm1
     ax.cla()
 
     ax.axes.set_xlim3d(right=3, left=-3)
@@ -76,7 +76,7 @@ def animate(i):
     ax.set_zlabel('Z Label')
 
     plot_axis(origin)
-    plot_axis(arm1.axis)
+    # plot_axis(arm1.axis)
     plot_link(arm1)
 
 ani = FuncAnimation(plt.gcf(), animate, interval=1)

@@ -63,7 +63,7 @@ class Link:
         self.axis = Axis(pos)                                    # Axis definition
         self.id = 'link-{}'.format(Link.count)                   # Link id
         self.pos = np.array(pos, dtype=float).reshape(3, 1)      # Position in space (Link)
-        self.lenght = np.array([[0, 0, 0], [0, 0, 0], [0, 0, lenght]], dtype=float).reshape(3, 3)
+        self.lenght = np.array([0, 0, lenght], dtype=float).reshape(3, 1)
         #self.lenght = rotate(                                    # Lenght vector definition
         #    np.array([0, 0, lenght], dtype=float).reshape(3, 1), # Lenght in Z axis
         #    dir[0], dir[1], dir[2])                              # Rotation in X, Y, Z
