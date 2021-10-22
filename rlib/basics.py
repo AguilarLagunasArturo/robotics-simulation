@@ -58,23 +58,23 @@ class Link:
         - TODO: POSITION IN SPACE FROM LINK IS DIFERENT FROM THE ONE IN AXIS
     '''
     count = 0
-    def __init__(self, pos=[0, 0, 0], dir=[0, 0, 0], lenght=1.0):
+    def __init__(self, pos=[0, 0, 0], dir=[0, 0, 0], mag=1.0):
         Link.count += 1                                          # New link created
         self.axis = Axis(pos)                                    # Axis definition
         self.id = 'link-{}'.format(Link.count)                   # Link id
         self.pos = np.array(pos, dtype=float).reshape(3, 1)      # Position in space (Link)
-        self.lenght = np.array([0, 0, lenght], dtype=float).reshape(3, 1)
+        self.mag = np.array([0, 0, mag], dtype=float).reshape(3, 1)
         #self.lenght = rotate(                                    # Lenght vector definition
         #    np.array([0, 0, lenght], dtype=float).reshape(3, 1), # Lenght in Z axis
         #    dir[0], dir[1], dir[2])                              # Rotation in X, Y, Z
 
         print('created: {}'.format(self.id))
 
+    # TODO:
+    # - DEBUG AXISES WORKING BUT LINK'S POSITION IN SPACE IS IN REFERENCE OF A FIXED AXIS
     def rotate(self, alpha=0.0, beta=0.0, gamma=0.0):
-        self.axis.rotate(alpha, beta, gamma)
-        print(self.lenght)
-        self.lenght = rotate(self.lenght, alpha, beta, gamma)
-        print(self.lenght)
+        # self.axis.rotate(alpha, beta, gamma)
+        self.mag = rotate_t(self.mag, alpha, beta, gamma)
 
     # TODO: Code system equivalencies
     def __calculate_cartesian(self):

@@ -11,7 +11,7 @@ import numpy as np
 import threading
 
 origin = Axis()
-arm1 = Link(pos=[2, 1, 2], dir=[0.0, np.pi/4, np.pi/4], lenght=1.0)
+arm1 = Link(pos=[2, 1, 2], dir=[0.0, np.pi/4, np.pi/4], mag=1.0)
 amt = np.pi/10
 
 def key_listening():
@@ -51,7 +51,7 @@ def plot_axis(a):
 
 def plot_link(l):
     start_pos = l.pos.flatten()
-    end_pos = l.lenght.flatten()
+    end_pos = l.mag.flatten()
     ax.plot(
         [start_pos[0], start_pos[0] + end_pos[0]],
         [start_pos[1], start_pos[1] + end_pos[1]],
@@ -75,8 +75,8 @@ def animate(i):
     ax.set_ylabel('Y Label')
     ax.set_zlabel('Z Label')
 
-    plot_axis(origin)
-    # plot_axis(arm1.axis)
+    # plot_axis(origin)
+    plot_axis(arm1.axis)
     plot_link(arm1)
 
 ani = FuncAnimation(plt.gcf(), animate, interval=1)
