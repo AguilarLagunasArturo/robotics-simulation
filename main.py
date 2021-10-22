@@ -10,8 +10,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import threading
 
-origin = Axis(0, 0, 0)
-arm1 = Link(pos=[0, 0, 0], mag=2)
+origin = Axis()
+arm1 = Link(pos=[2, 1, 2], dir=[0.0, np.pi/4, np.pi/4], lenght=1.0)
 amt = np.pi/10
 
 def key_listening():
@@ -19,15 +19,15 @@ def key_listening():
     while True:
         command = input('Command: ')
         if command == 'x':
-            arm1.axis.rotate(alpha=amt)
+            arm1.rotate(alpha=amt)
         elif command == 'y':
-            arm1.axis.rotate(beta=amt)
+            arm1.rotate(beta=amt)
         elif command == 'z':
-            arm1.axis.rotate(gamma=amt)
+            arm1.rotate(gamma=amt)
         elif command == '-x':
-            arm1.axis.rotate(alpha=-amt)
+            arm1.rotate(alpha=-amt)
         elif command == '-y':
-            arm1.axis.rotate(beta=-amt)
+            arm1.rotate(beta=-amt)
         elif command == '-z':
             arm1.rotate(gamma=-amt)
         else:
@@ -39,16 +39,26 @@ t_keys.start()
 fig = plt.figure()
 ax = fig.add_subplot(projection='3d')
 
-def plotAxis(a):
+def plot_axis(a):
     colors = ['c', 'g', 'm']
     start_pos = a.pos.flatten()
     ax.scatter(start_pos[0], start_pos[1], start_pos[2], marker='o')
-    for i, end_pos in enumerate(a.axises):
+    for i, end_pos in enumerate( a.axises ):
         ax.plot(
             [start_pos[0], start_pos[0] + end_pos[0]],
             [start_pos[1], start_pos[1] + end_pos[1]],
             [start_pos[2], start_pos[2] + end_pos[2]], color=colors[i%3])
 
+def plot_link(l):
+    start_pos = l.pos.flatten()
+    end_pos = np.transpose(l.lenght)[2].flatten()
+    ax.plot(
+        [start_pos[0], start_pos[0] + end_pos[0]],
+        [start_pos[1], start_pos[1] + end_pos[1]],
+        [start_pos[2], start_pos[2] + end_pos[2]])
+
+def plot_element(e):
+    plot_axis()
 # TODO: CODE FUNCTION PLOTELEMENT (INSTEAD OF PLOTAXIS TO PLOT AXIS + LINK)
 # TODO: CREATE MODULE FOR GRAPHING WITH MATPLOTLIB
 # TODO: CREATE MODULE FOR GRAPHING WITH OPENGL
@@ -65,8 +75,9 @@ def animate(i):
     ax.set_ylabel('Y Label')
     ax.set_zlabel('Z Label')
 
-    plotAxis(origin)
-    plotAxis(arm1.axis)
+    plot_axis(origin)
+    plot_axis(arm1.axis)
+    plot_link(arm1)
 
 ani = FuncAnimation(plt.gcf(), animate, interval=1)
 plt.show()

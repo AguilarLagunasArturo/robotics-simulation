@@ -29,35 +29,52 @@ def get_rz(theta=0):
         [0, 0, 1]
     ], dtype=float)
 
-class Axis:
-    def __init__(self, p1, p2, p3):
-        self.axises = np.eye(3)
-        self.pos = np.array([p1, p2, p3], dtype=float).reshape(3, 1)
+def rotate(element, alpha=0.0, beta=0.0, gamma=0.0):
+    element = np.matmul( get_rx(alpha), element )
+    element = np.matmul( get_ry(beta), element )
+    element = np.matmul( get_rz(gamma), element )
+    return element
 
+def rotate_t(element, alpha=0.0, beta=0.0, gamma=0.0):
+    element = np.matmul( np.transpose(get_rx(alpha)), element )
+    element = np.matmul( np.transpose(get_ry(beta)), element )
+    element = np.matmul( np.transpose(get_rz(gamma)), element )
+    return element
+
+class Axis:
+    def __init__(self, pos=[0, 0, 0]):
+        self.axises = np.eye(3)                             # Cannonical representation of the unit vectors
+        self.pos = np.array(pos, dtype=float).reshape(3, 1) # Position in space (Axis)
+
+    # Rotate the axises
     def rotate(self, alpha=0.0, beta=0.0, gamma=0.0):
-        self.axises = np.matmul( get_rx(alpha), self.axises)
-        self.axises = np.matmul( get_ry(beta), self.axises)
-        self.axises = np.matmul( get_rz(gamma), self.axises)
+        self.axises = rotate(self.axises, alpha, beta, gamma)
         return self.axises
 
 # TODO: INHERIT FROM AXIS CLASS
-class Link():
-    id = 0
+class Link:
     ''' NOTES:
         - INITIAL POSITION, MAGNITUDE/LEGHT/SIZE IN +Z DIRECTION
-        - TODO: DIRECTION FROM LINK IS DIFERENT FROM THE ONE IN AXIS
         - TODO: POSITION IN SPACE FROM LINK IS DIFERENT FROM THE ONE IN AXIS
     '''
-    def __init__(self, pos=[0, 0, 0], dir=[0, 0, 0], mag=1.0):
-        Link.id += 1
-        self.name = 'link-{}'.format(Link.id)
-        self.axis = Axis(pos[0], pos[1], pos[2])
-        # TODO: Rotate self.axis by dir
-        self.mag = np.array([0, 0, mag], dtype=float).reshape(3, 1)
-        print('created: {}'.format(self.name))
+    count = 0
+    def __init__(self, pos=[0, 0, 0], dir=[0, 0, 0], lenght=1.0):
+        Link.count += 1                                          # New link created
+        self.axis = Axis(pos)                                    # Axis definition
+        self.id = 'link-{}'.format(Link.count)                   # Link id
+        self.pos = np.array(pos, dtype=float).reshape(3, 1)      # Position in space (Link)
+        self.lenght = np.array([[0, 0, 0], [0, 0, 0], [0, 0, lenght]], dtype=float).reshape(3, 3)
+        #self.lenght = rotate(                                    # Lenght vector definition
+        #    np.array([0, 0, lenght], dtype=float).reshape(3, 1), # Lenght in Z axis
+        #    dir[0], dir[1], dir[2])                              # Rotation in X, Y, Z
 
-    def rotate(self, angle):
-        pass
+        print('created: {}'.format(self.id))
+
+    def rotate(self, alpha=0.0, beta=0.0, gamma=0.0):
+        self.axis.rotate(alpha, beta, gamma)
+        print(self.lenght)
+        self.lenght = rotate(self.lenght, alpha, beta, gamma)
+        print(self.lenght)
 
     # TODO: Code system equivalencies
     def __calculate_cartesian(self):
