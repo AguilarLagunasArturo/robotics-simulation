@@ -10,9 +10,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 import threading
 
+# TODO: CREATE MODULE FOR GRAPHING WITH MATPLOTLIB
+# TODO: CREATE MODULE FOR GRAPHING WITH OPENGL
+
+# TODO: COMPARE AXISES/LINKS SPAWNED W/ THE SAME ANGLES BUT IN DIFFERENT ORDER
 origin = Axis()
-arm1 = Link(pos=[2, 1, 2], dir=[0.0, np.pi/4, np.pi/4], mag=1.0)
-amt = np.pi/10
+arm1 = Link(pos=[0, 0, 0], dir=[0.0, np.pi/4, np.pi/4], mag=2.0)
+arm2 = Link(pos=[0, 0, 2], dir=[0.0, np.pi/4, np.pi/4], mag=1.5)
+
+amt = np.pi/8
 
 def key_listening():
     global arm1, amt
@@ -51,17 +57,15 @@ def plot_axis(a):
 
 def plot_link(l):
     start_pos = l.pos.flatten()
-    end_pos = l.mag.flatten()
+    end_pos = l.vec.flatten()
     ax.plot(
         [start_pos[0], start_pos[0] + end_pos[0]],
         [start_pos[1], start_pos[1] + end_pos[1]],
         [start_pos[2], start_pos[2] + end_pos[2]])
 
 def plot_element(e):
-    plot_axis()
-# TODO: CODE FUNCTION PLOTELEMENT (INSTEAD OF PLOTAXIS TO PLOT AXIS + LINK)
-# TODO: CREATE MODULE FOR GRAPHING WITH MATPLOTLIB
-# TODO: CREATE MODULE FOR GRAPHING WITH OPENGL
+    plot_axis(e.axis)
+    plot_link(e.axis)
 
 def animate(i):
     global origin, arm1
@@ -78,6 +82,8 @@ def animate(i):
     # plot_axis(origin)
     plot_axis(arm1.axis)
     plot_link(arm1)
+    plot_axis(arm2.axis)
+    plot_link(arm2)
 
 ani = FuncAnimation(plt.gcf(), animate, interval=1)
 plt.show()
