@@ -8,6 +8,8 @@ Description:    Basic operations for manipuling links
 
 import numpy as np
 
+# TODO: CODE FUNCTION TO ROTATE AGAINST AN AXIS
+
 def get_rx(theta=0):
     return np.array([
         [1, 0, 0],
@@ -59,15 +61,20 @@ class Link:
     '''
     count = 0
     def __init__(self, pos=[0, 0, 0], dir=[0, 0, 0], mag=1.0):
-        Link.count += 1                                          # New link created
-        self.axis = Axis(pos)                                    # Axis definition
-        self.id = 'link-{}'.format(Link.count)                   # Link id
-        self.pos = np.array(pos, dtype=float).reshape(3, 1)      # Position in space (Link)
-        self.mag = mag                                           # Link's lenght
-        self.vec = self.axis.axises[2] * self.mag                       # Lenght in Z axis
-        #self.lenght = rotate(                                    # Lenght vector definition
-        #    np.array([0, 0, lenght], dtype=float).reshape(3, 1), # Lenght in Z axis
-        #    dir[0], dir[1], dir[2])                              # Rotation in X, Y, Z
+        Link.count += 1                                         # New link created
+        self.axis = Axis(pos)                                   # Axis definition
+        self.id = 'link-{}'.format(Link.count)                  # Link id
+        self.pos = np.array(pos, dtype=float).reshape(3, 1)     # Position in space (Link)
+        self.mag = mag                                          # Link's lenght
+        self.__o_vec = np.array(                                # Lenght in Z axis
+            [0, 0, self.mag],
+            dtype=float).reshape(3, 1)
+
+        # Align lenght vector in Z with rotated reference axis direction
+        self.__o_vec = np.matmul(                               # Lenght in X, Y, Z
+            rotate_t(self.axis.axises, dir[0], dir[1], dir[2]), # Generate reference axises
+            np.array([0, 0, mag], dtype=float).reshape(3, 1) )  # Lenght in Z axis
+        self.vec = self.__o_vec
 
         print('created: {}'.format(self.id))
 
@@ -75,10 +82,7 @@ class Link:
     # - DEBUG AXISES WORKING BUT LINK'S POSITION IN SPACE IS IN REFERENCE OF A FIXED AXIS
     def rotate(self, alpha=0.0, beta=0.0, gamma=0.0):
         self.axis.rotate(alpha, beta, gamma)
-        self.vec = self.axis.axises[2] * self.mag
-        #self.mag = np.matmul( np.transpose(self.axis.axises), self.mag )
-        #self.mag = rotate(self.mag, alpha, beta, gamma)
-        #self.mag_t = rotate_t(self.mag_t, alpha, beta, gamma)
+        self.vec = np.matmul( np.transpose( self.axis.axises ), self.__o_vec )
 
     # TODO: Code system equivalencies
     def __calculate_cartesian(self):
