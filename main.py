@@ -15,8 +15,9 @@ import threading
 
 # TODO: COMPARE AXISES/LINKS SPAWNED W/ THE SAME ANGLES BUT IN DIFFERENT ORDER
 origin = Axis()
-arm1 = Link(pos=[0, 0, 0], dir=[0.0, np.pi/4, np.pi/4], mag=2.0)
-arm2 = Link(pos=[0, 0, 2], dir=[0.0, np.pi/4, np.pi/4], mag=1.5)
+# arm1 = Link(pos=[0, 0, 0], dir=[np.pi/50, np.pi/50, 0.0],mag=1.0)
+arm1 = Link(pos=[0, 0, 0], mag=2.0)
+arm2 = Link(pos=[0, 0, 2], mag=0.5)
 
 amt = np.pi/8
 
@@ -65,7 +66,7 @@ def plot_link(l):
 
 def plot_element(e):
     plot_axis(e.axis)
-    plot_link(e.axis)
+    plot_link(e)
 
 def animate(i):
     global origin, arm1
@@ -80,10 +81,8 @@ def animate(i):
     ax.set_zlabel('Z Label')
 
     # plot_axis(origin)
-    plot_axis(arm1.axis)
-    plot_link(arm1)
-    plot_axis(arm2.axis)
-    plot_link(arm2)
+    plot_element(arm1)
+    plot_element(arm2)
 
 ani = FuncAnimation(plt.gcf(), animate, interval=1)
 plt.show()
