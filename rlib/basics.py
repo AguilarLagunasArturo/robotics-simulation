@@ -9,6 +9,7 @@ Description:    Basic operations for manipuling links
 import numpy as np
 
 # TODO: CODE FUNCTION TO ROTATE AGAINST AN AXIS
+# TODO: CREATE MECH CLASS
 
 def get_rx(theta=0):
     return np.array([
@@ -53,7 +54,7 @@ class Axis:
         self.axises = rotate(self.axises, alpha, beta, gamma)
         return self.axises
 
-# TODO: INHERIT FROM AXIS CLASS
+# TODO: MAYBE INHERIT FROM AXIS CLASS
 class Link:
     ''' NOTES:
         - INITIAL POSITION, MAGNITUDE/LEGHT/SIZE IN +Z DIRECTION
@@ -61,9 +62,8 @@ class Link:
     '''
     count = 0
     def __init__(self, pos=[0, 0, 0], dir=[0, 0, 0], mag=1.0):
-        Link.count += 1                                         # New link created
         self.axis = Axis(pos)                                   # Axis definition
-        self.id = 'link-{}'.format(Link.count)                  # Link id
+        self.id = Link.count                                    # Link id
         self.pos = np.array(pos, dtype=float).reshape(3, 1)     # Position in space (Link)
         self.mag = mag                                          # Link's lenght
         self.__o_vec = np.array(                                # Lenght in Z axis
@@ -76,7 +76,8 @@ class Link:
             np.array([0, 0, mag], dtype=float).reshape(3, 1) )  # Lenght in Z axis
         self.vec = self.__o_vec
 
-        print('created: {}'.format(self.id))
+        Link.count += 1                                         # New link created
+        print('link-id: {}'.format(self.id))
 
     # TODO:
     # - DEBUG AXISES WORKING BUT LINK'S POSITION IN SPACE IS IN REFERENCE OF A FIXED AXIS
