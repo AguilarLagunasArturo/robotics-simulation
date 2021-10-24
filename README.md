@@ -17,8 +17,8 @@ python main.py
 |:-|:-|
 |0-9|Select link|
 |x|Rotate around x axis (+)|
-|X|Rotate around x axis (-)|
+|shift+x|Rotate around x axis (-)|
 |y|Rotate around y axis (+)|
-|Y|Rotate around y axis (-)|
+|shift+y|Rotate around y axis (-)|
 |z|Rotate around z axis (+)|
-|Z|Rotate around z axis (-)|
+|shift+z|Rotate around z axis (-)|
