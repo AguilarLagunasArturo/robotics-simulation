@@ -70,7 +70,7 @@ class Link:
             [0, 0, self.mag],
             dtype=float).reshape(3, 1)
 
-        # Align lenght vector in Z with rotated reference axis direction
+        # Align lenght vector in Z with rotated reference axis
         self.__o_vec = np.matmul(                               # Lenght in X, Y, Z
             rotate_t(self.axis.axises, dir[0], dir[1], dir[2]), # Generate reference axises
             np.array([0, 0, mag], dtype=float).reshape(3, 1) )  # Lenght in Z axis
@@ -79,21 +79,26 @@ class Link:
         Link.count += 1                                         # New link created
         print('link-id: {}'.format(self.id))
 
-    # TODO:
-    # - DEBUG AXISES WORKING BUT LINK'S POSITION IN SPACE IS IN REFERENCE OF A FIXED AXIS
     def rotate(self, alpha=0.0, beta=0.0, gamma=0.0):
         self.axis.rotate(alpha, beta, gamma)
         self.vec = np.matmul( np.transpose( self.axis.axises ), self.__o_vec )
 
-    # TODO: Code system equivalencies
-    def __calculate_cartesian(self):
-        # x, y, z
-        pass
+    def update(self, new_rotation):
+        self.axis.axies = np.matmul( new_rotation, self.axis.axises )
+        self.vec = np.matmul( np.transpose( self.axis.axises ), self.__o_vec )
 
-    def __calculate_cylindrical(self):
-        # rho, theta, z
-        pass
+class Mecha:
+    # TODO: CARTESIAN -> CYLINDRICAL TO ROTATE AXIS & LINK_VECTOR
+    def __init__(self, articulation_points):
+        self.links = []
+        for i, pos in enumerate(articulation_points):
+            # TODO: OBTAIN ANGLE AND MAG
+            self.links.append( Link(pos=pos, dir=[0.0, 0.0, 0.0], mag=1.0) )
+            if i > 0:
+                self.links[i].reference_link = self.links[i-1]
 
-    def __calculate_spherical(self):
-        # r, theta, phi
-        pass
+    def rotate(self, element, alpha=0.0, beta=0.0, gamma=0.0):
+        self.links[element].rotate(alpha, beta, gamma)
+        if not ( element + 1 == len(self.links) ):
+            for i, link in enumerate( self.links[element+1:] ):
+                self.links[i + element + 1].update(link.axis.axises)
