@@ -6,43 +6,61 @@
 
 from rlib import Axis, Link
 from matplotlib.animation import FuncAnimation
+from pynput import keyboard
 import matplotlib.pyplot as plt
 import numpy as np
 import threading
 
 # TODO: CREATE MODULE FOR GRAPHING WITH MATPLOTLIB
 # TODO: CREATE MODULE FOR GRAPHING WITH OPENGL
-
 # TODO: COMPARE AXISES/LINKS SPAWNED W/ THE SAME ANGLES BUT IN DIFFERENT ORDER
+
+# variables
 origin = Axis()
-# arm1 = Link(pos=[0, 0, 0], dir=[np.pi/50, np.pi/50, 0.0],mag=1.0)
-arm1 = Link(pos=[0, 0, 0], mag=2.0)
-arm2 = Link(pos=[0, 0, 2], mag=0.5)
+links = [
+    Link(pos=[0, 0, 0], mag=2.0), # arm-0
+    Link(pos=[0, 0, 2], mag=0.5)  # arm-1
+]
+current_link = 0
+step = np.pi/8
 
-amt = np.pi/8
-
-def key_listening():
-    global arm1, amt
-    while True:
-        command = input('Command: ')
-        if command == 'x':
-            arm1.rotate(alpha=amt)
-        elif command == 'y':
-            arm1.rotate(beta=amt)
-        elif command == 'z':
-            arm1.rotate(gamma=amt)
-        elif command == '-x':
-            arm1.rotate(alpha=-amt)
-        elif command == '-y':
-            arm1.rotate(beta=-amt)
-        elif command == '-z':
-            arm1.rotate(gamma=-amt)
+# pynput, keyboard handler
+def on_press(key):
+    global current_link, links
+    try:
+        k = key.char
+        if k in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']:
+            if int(k) < len(links):
+                print('link-{} -> link-{}'.format(current_link, link))
+                current_link = int(k)
+            else:
+                print('link does not exists')
+        elif k == 'x':
+            links[current_link].rotate(alpha=step)
+        elif k == 'X':
+            links[current_link].rotate(alpha=-step)
+            pass
+        elif k == 'y':
+            links[current_link].rotate(beta=step)
+            pass
+        elif k == 'Y':
+            links[current_link].rotate(beta=-step)
+            pass
+        elif k == 'z':
+            links[current_link].rotate(gamma=step)
+            pass
+        elif k == 'Z':
+            links[current_link].rotate(gamma=-step)
         else:
-            print('Invalid command')
+            pass
+    except AttributeError:
+        pass
+        # print('special key {0} pressed'.format(key))
 
-t_keys = threading.Thread(target=key_listening, args=())
-t_keys.start()
+listener = keyboard.Listener(on_press=on_press)
+listener.start()
 
+# matplotlib, plotting
 fig = plt.figure()
 ax = fig.add_subplot(projection='3d')
 
@@ -70,19 +88,20 @@ def plot_element(e):
 
 def animate(i):
     global origin, arm1
+    space = 8
+
     ax.cla()
 
-    ax.axes.set_xlim3d(right=3, left=-3)
-    ax.axes.set_ylim3d(bottom=3, top=-3)
-    ax.axes.set_zlim3d(bottom=-3, top=3)
+    ax.axes.set_xlim3d(right=space, left=-space)
+    ax.axes.set_ylim3d(bottom=space, top=-space)
+    ax.axes.set_zlim3d(bottom=-space, top=space)
 
     ax.set_xlabel('X Label')
     ax.set_ylabel('Y Label')
     ax.set_zlabel('Z Label')
 
     # plot_axis(origin)
-    plot_element(arm1)
-    plot_element(arm2)
+    for arm in links: plot_element(arm)
 
 ani = FuncAnimation(plt.gcf(), animate, interval=1)
 plt.show()
