@@ -83,9 +83,18 @@ class Link:
         self.axis.rotate(alpha, beta, gamma)
         self.vec = np.matmul( np.transpose( self.axis.axises ), self.__o_vec )
 
+    # TODO: UPDATE AXIS & VECTOR POSITION X, Y, Z
     def update(self, new_rotation):
-        self.axis.axies = np.matmul( new_rotation, self.axis.axises )
-        self.vec = np.matmul( np.transpose( self.axis.axises ), self.__o_vec )
+        print('updating {}'.format(self.id))
+        '''
+        NOTES:
+            - AQUI ME QUEDÉ
+            - ROTAR EJES INDEPENDIENTEMENTE CON (ALPHA, BETA, GAMMA) ALOMEJOR
+              ES NECESARIO UTILIZAR MATRIZ TRASPUESTA
+            - ROTAR VECTOR CON LA NUEVA MATRIZ DE ROTACION
+        '''
+        self.axis.axies = np.matmul( np.transpose( new_rotation ), self.axis.axises )
+        self.vec = np.matmul( np.transpose( new_rotation ), self.__o_vec )
 
 class Mecha:
     # TODO: CARTESIAN -> CYLINDRICAL TO ROTATE AXIS & LINK_VECTOR
@@ -95,10 +104,12 @@ class Mecha:
             # TODO: OBTAIN ANGLE AND MAG
             self.links.append( Link(pos=pos, dir=[0.0, 0.0, 0.0], mag=1.0) )
             if i > 0:
-                self.links[i].reference_link = self.links[i-1]
+                self.links[i].pos = self.links[i].pos + self.links[i-1].pos
+                self.links[i].axis.pos = self.links[i].axis.pos + self.links[i-1].axis.pos
+                self.links[i].reference_link = self.links[i-1].id
 
     def rotate(self, element, alpha=0.0, beta=0.0, gamma=0.0):
         self.links[element].rotate(alpha, beta, gamma)
         if not ( element + 1 == len(self.links) ):
             for i, link in enumerate( self.links[element+1:] ):
-                self.links[i + element + 1].update(link.axis.axises)
+                self.links[i + element + 1].update( self.links[i + element].axis.axises )
