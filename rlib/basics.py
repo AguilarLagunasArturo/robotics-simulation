@@ -44,6 +44,18 @@ def rotate_t(element, alpha=0.0, beta=0.0, gamma=0.0):
     element = np.matmul( np.transpose(get_rz(gamma)), element )
     return element
 
+def rotate_left(mov_ax, alpha=0.0, beta=0.0, gamma=0.0, ref_ax=np.eye(3)):
+    mov_ax = np.matmul( np.matmul(get_rx(alpha), ref_ax), mov_ax )
+    mov_ax = np.matmul( np.matmul(get_ry(beta), ref_ax), mov_ax )
+    mov_ax = np.matmul( np.matmul(get_rz(gamma), ref_ax), mov_ax )
+    return mov_ax
+
+def rotate_right(mov_ax, alpha=0.0, beta=0.0, gamma=0.0, ref_ax=np.eye(3)):
+    mov_ax = np.matmul( np.matmul( ref_ax, get_rx(alpha) ), mov_ax )
+    mov_ax = np.matmul( np.matmul( ref_ax, get_ry(beta) ), mov_ax )
+    mov_ax = np.matmul( np.matmul( ref_ax, get_rz(gamma) ), mov_ax )
+    return mov_ax
+
 class Axis:
     def __init__(self, pos=[0, 0, 0]):
         self.axises = np.eye(3)                             # Cannonical representation of the unit vectors
@@ -85,18 +97,28 @@ class Link:
         self.vec = np.matmul( np.transpose( self.axis.axises ), self.__o_vec )
 
     # TODO: UPDATE AXIS & VECTOR POSITION X, Y, Z
-    def update(self, new_rotation, new_pos):
+    '''def update(self, new_rotation, new_pos):
         print('updating {}'.format(self.id))
-        '''
-        NOTES:
-            - AQUI ME QUEDÉ
-            - ROTAR EJES INDEPENDIENTEMENTE CON (ALPHA, BETA, GAMMA) ALOMEJOR
-              ES NECESARIO UTILIZAR MATRIZ TRASPUESTA
-            - ROTAR VECTOR CON LA NUEVA MATRIZ DE ROTACION
-        '''
+
+        # NOTES:
+        #     - AQUI ME QUEDÉ
+        #     - ROTAR EJES INDEPENDIENTEMENTE CON (ALPHA, BETA, GAMMA) ALOMEJOR
+        #       ES NECESARIO UTILIZAR MATRIZ TRASPUESTA
+        #     - ROTAR VECTOR CON LA NUEVA MATRIZ DE ROTACION
+
         self.axis.axises = np.matmul( new_rotation, self.__fixed_axises )
         print(self.axis.axises)
         self.vec = np.matmul( np.transpose( new_rotation ), self.__o_vec )
+        self.pos = new_pos
+        self.axis.pos = new_pos'''
+
+    def update(self, alpha, beta, gamma, new_pos, new_ax):
+        print('updating {}'.format(self.id))
+        # self.axis.axises = np.matmul( new_rotation, self.__fixed_axises )
+        print(self.axis.axises)
+        self.axis.axises = rotate_left( self.axis.axises, alpha, beta, gamma, self.__fixed_axises )
+        print(self.axis.axises)
+        self.vec = np.matmul( np.transpose( self.axis.axises ), self.__o_vec )
         self.pos = new_pos
         self.axis.pos = new_pos
 
@@ -117,5 +139,13 @@ class Mecha:
         if not ( element + 1 == len(self.links) ):
             for i, link in enumerate( self.links[element+1:] ):
                 prev_link = self.links[i + element]
-                self.links[i + element + 1].update( prev_link.axis.axises, prev_link.pos + prev_link.vec )
-                print( self.links[i + element + 1].axis.axises )
+                # old
+                # self.links[i + element + 1].update( prev_link.axis.axises, prev_link.pos + prev_link.vec )
+
+                # new
+                self.links[i + element + 1].update(
+                    alpha, beta, gamma,
+                    prev_link.pos + prev_link.vec,
+                    prev_link.axis.axises )
+
+                # print( self.links[i + element + 1].axis.axises )
