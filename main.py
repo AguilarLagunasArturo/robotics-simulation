@@ -120,7 +120,7 @@ def plot_element(e):
 
 def animate(i):
     global origin, arm1
-    space = 8
+    space = 3
 
     ax.cla()
 

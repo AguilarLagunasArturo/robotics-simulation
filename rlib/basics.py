@@ -63,6 +63,7 @@ class Link:
     count = 0
     def __init__(self, pos=[0, 0, 0], dir=[0, 0, 0], mag=1.0):
         self.axis = Axis(pos)                                   # Axis definition
+        self.__fixed_axises = self.axis.axises                  # Fixed axises
         self.id = Link.count                                    # Link id
         self.pos = np.array(pos, dtype=float).reshape(3, 1)     # Position in space (Link)
         self.mag = mag                                          # Link's lenght
@@ -84,7 +85,7 @@ class Link:
         self.vec = np.matmul( np.transpose( self.axis.axises ), self.__o_vec )
 
     # TODO: UPDATE AXIS & VECTOR POSITION X, Y, Z
-    def update(self, new_rotation):
+    def update(self, new_rotation, new_pos):
         print('updating {}'.format(self.id))
         '''
         NOTES:
@@ -93,8 +94,11 @@ class Link:
               ES NECESARIO UTILIZAR MATRIZ TRASPUESTA
             - ROTAR VECTOR CON LA NUEVA MATRIZ DE ROTACION
         '''
-        self.axis.axies = np.matmul( np.transpose( new_rotation ), self.axis.axises )
+        self.axis.axises = np.matmul( new_rotation, self.__fixed_axises )
+        print(self.axis.axises)
         self.vec = np.matmul( np.transpose( new_rotation ), self.__o_vec )
+        self.pos = new_pos
+        self.axis.pos = new_pos
 
 class Mecha:
     # TODO: CARTESIAN -> CYLINDRICAL TO ROTATE AXIS & LINK_VECTOR
@@ -112,4 +116,6 @@ class Mecha:
         self.links[element].rotate(alpha, beta, gamma)
         if not ( element + 1 == len(self.links) ):
             for i, link in enumerate( self.links[element+1:] ):
-                self.links[i + element + 1].update( self.links[i + element].axis.axises )
+                prev_link = self.links[i + element]
+                self.links[i + element + 1].update( prev_link.axis.axises, prev_link.pos + prev_link.vec )
+                print( self.links[i + element + 1].axis.axises )
