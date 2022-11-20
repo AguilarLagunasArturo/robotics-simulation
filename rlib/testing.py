@@ -26,11 +26,12 @@ if __name__ == '__main__':
         [0, 0, 0, 0], # 1
         [9, 0, 0, 0], # 2
         [9, 0, 0, 0], # 3
-        [0, 0, 8, 0], # e
+        [0, 0, 8, 0]  # e
     ]
 
     hm = [ get_ghm(dh_args=dh_i) for dh_i in dh ]
-    [print(ti) for ti in hm ]
+    # [print(ti) for ti in hm ]
     print()
-    t = np.matmul( hm[0], np.matmul( hm[1], np.matmul( hm[2], hm[3] ) ) )
+    # t = np.matmul( hm[3], np.matmul( hm[2], np.matmul( hm[1], hm[0] ) ) )
+    t = np.matmul( hm[0], np.matmul(hm[1], hm[2]) )
     print(t)

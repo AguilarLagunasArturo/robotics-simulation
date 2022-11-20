@@ -4,7 +4,7 @@
 # Date:         Tue Oct 19 12:17:43 PM CDT 2021
 # Description:  Main file for testing
 
-from rlib import Axis, Link
+from rlib import Axis, Link, Mecha
 from matplotlib.animation import FuncAnimation
 from pynput import keyboard
 import matplotlib.pyplot as plt
@@ -15,47 +15,83 @@ import threading
 # TODO: CREATE MODULE FOR GRAPHING WITH OPENGL
 
 # variables
-origin = Axis()
-links = [
-    Link(pos=[0, 0, 0], mag=2.0), # arm-0
-    Link(pos=[0, 0, 2], mag=0.5)  # arm-1
+dh = [
+    [0, 0, 0, 0],
+    [9, 0, 0, 0],
+    [9, 0, 0, 0],
+    [0, 0, 8, 0]
 ]
+mecha = Mecha(dh_args=dh)
 current_link = 0
 step = np.pi/8
 
 # pynput, keyboard handler
+
 def on_press(key):
-    global current_link, links
+    global current_link, mecha
     try:
         k = key.char
         if k in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']:
-            if int(k) < len(links):
-                print('link-{} -> link-{}'.format(links[current_link].id, k))
+            if int(k) < len(mecha.links):
+                print('link-{} -> link-{}'.format(mecha.links[current_link].id, k))
                 current_link = int(k)
             else:
                 print('link does not exists')
         elif k == 'x':
-            links[current_link].rotate(alpha=step)
+            mecha.rotate(current_link, alpha=step)
         elif k == 'X':
-            links[current_link].rotate(alpha=-step)
+            mecha.rotate(current_link, alpha=-step)
             pass
         elif k == 'y':
-            links[current_link].rotate(beta=step)
+            mecha.rotate(current_link, beta=step)
             pass
         elif k == 'Y':
-            links[current_link].rotate(beta=-step)
+            mecha.rotate(current_link, beta=-step)
             pass
         elif k == 'z':
-            links[current_link].rotate(gamma=step)
+            mecha.rotate(current_link, gamma=step)
             pass
         elif k == 'Z':
-            links[current_link].rotate(gamma=-step)
+            mecha.rotate(current_link, gamma=-step)
         else:
             pass
     except AttributeError:
         pass
         # print('special key {0} pressed'.format(key))
 
+'''
+def on_press(key):
+    global current_link, mecha
+    try:
+        k = key.char
+        if k in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']:
+            if int(k) < len(mecha.links):
+                print('link-{} -> link-{}'.format(mecha.links[current_link].id, k))
+                current_link = int(k)
+            else:
+                print('link does not exists')
+        elif k == 'x':
+            mecha.links[current_link].rotate(alpha=step)
+        elif k == 'X':
+            mecha.links[current_link].rotate(alpha=-step)
+            pass
+        elif k == 'y':
+            mecha.links[current_link].rotate(beta=step)
+            pass
+        elif k == 'Y':
+            mecha.links[current_link].rotate(beta=-step)
+            pass
+        elif k == 'z':
+            mecha.links[current_link].rotate(gamma=step)
+            pass
+        elif k == 'Z':
+            mecha.links[current_link].rotate(gamma=-step)
+        else:
+            pass
+    except AttributeError:
+        pass
+        # print('special key {0} pressed'.format(key))
+'''
 listener = keyboard.Listener(on_press=on_press)
 listener.start()
 
@@ -87,7 +123,7 @@ def plot_element(e):
 
 def animate(i):
     global origin, arm1
-    space = 8
+    space = 3
 
     ax.cla()
 
@@ -100,7 +136,7 @@ def animate(i):
     ax.set_zlabel('Z Label')
 
     # plot_axis(origin)
-    for arm in links: plot_element(arm)
+    for arm in mecha.links: plot_element(arm)
 
 ani = FuncAnimation(plt.gcf(), animate, interval=1)
 plt.show()
